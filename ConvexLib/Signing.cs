@@ -6,10 +6,6 @@ using Org.BouncyCastle.Security;
 
 namespace ConvexLib
 {
-    public class Signing
-    {
-    }
-
     public class KeyPair
     {
         public string privateKey { get; set; }

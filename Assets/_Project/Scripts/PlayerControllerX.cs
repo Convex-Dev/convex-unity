@@ -26,39 +26,49 @@ public class PlayerControllerX : MonoBehaviour
     private Account _account;
 
 
-
     // Start is called before the first frame update
     void Start()
     {
         Physics.gravity *= gravityModifier;
         playerAudio = GetComponent<AudioSource>();
         playerRb = GetComponent<Rigidbody>();
-        
-        StartConvex();
 
+        StartConvex();
     }
 
     private async void StartConvex()
     {
-        Game game = new Game();
-        Account account = await game.CreateAccount();
-        _account = account;
+        KeyPair keyPair = new KeyPair();
+        string publicKey = keyPair.GenerateKeyPair().publicKey;
+        AccountKey accountKey = new AccountKey
+        {
+            value = publicKey
+        };
+
+        Convex convex = new Convex();
+        Account account = await convex.CreateAccount(accountKey);
         Debug.Log(account);
+
+        Credentials credentials = new Credentials();
+        credentials.address = 4022;
+
+        convex.SetCredentials(credentials);
 
         //Works
         //AccountDetails accountDetails = await game.GetAccountDetails(account.address);
-        AccountDetails accountDetails = await game.GetAccountDetails(251);
-        Debug.Log(accountDetails);
-        
+        // AccountDetails accountDetails = await convex.GetAccountDetails(4422);
+        // Debug.Log(accountDetails);
+        //
+        // //Works
+        // Faucet faucet = await convex.Faucet(251, 1000);
+        // Debug.Log(faucet);
+        //
         //Works
-        Faucet faucet = await game.Faucet(251, 1000);
-        Debug.Log(faucet);
+        // QueryResponse loginResponse = await convex.Query("(map inc [1 2 3])");
+        // Debug.Log(loginResponse);
 
-        //Works
-        QueryResponse loginResponse = await game.Query(251, "(map inc [1 2 3])");
-        Debug.Log(loginResponse);
-        
-        
+        // string resp = await convex.Transact();
+        // Debug.Log("Response " + resp);
     }
 
     // Update is called once per frame
@@ -74,8 +84,6 @@ public class PlayerControllerX : MonoBehaviour
         {
             playerRb.AddForce(Vector3.up * floatForce);
         }
-
-
     }
 
     private void OnCollisionEnter(Collision other)
@@ -102,8 +110,6 @@ public class PlayerControllerX : MonoBehaviour
             fireworksParticle.Play();
             playerAudio.PlayOneShot(moneySound, 1.0f);
             Destroy(other.gameObject);
-
         }
-
     }
 }

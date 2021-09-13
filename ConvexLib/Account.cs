@@ -9,7 +9,19 @@ namespace ConvexLib
     [Serializable]
     public class Account
     {
-        public int address;
-        public string error;
+        public int Address;
+        public int Sequence;
+        public AccountType Type;
+        public int Balance;
+        public int MemorySize;
+        public int MemoryAllowance;
+        public string Error;
+    }
+
+    public enum AccountType
+    {
+        Actor,
+        User,
+        Library
     }
 }
