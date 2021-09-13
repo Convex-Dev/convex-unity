@@ -1,0 +1,8 @@
+D:\Code\Superstruct\in-house\ConvexLib\assets\ConvexLib.dll
+D:\Code\Superstruct\in-house\ConvexLib\assets\ConvexLib.pdb
+D:\Code\Superstruct\in-house\ConvexLib\ConvexLib\obj\Debug\ConvexLib.csproj.AssemblyReference.cache
+D:\Code\Superstruct\in-house\ConvexLib\ConvexLib\obj\Debug\ConvexLib.csproj.CoreCompileInputs.cache
+D:\Code\Superstruct\in-house\ConvexLib\ConvexLib\obj\Debug\ConvexLib.dll
+D:\Code\Superstruct\in-house\ConvexLib\ConvexLib\obj\Debug\ConvexLib.pdb
+D:\Code\Superstruct\in-house\ConvexLib\assets\ConvexLib.dll.config
+D:\Code\Superstruct\in-house\ConvexLib\ConvexLib\obj\Debug\ConvexLib.csproj.CopyComplete
