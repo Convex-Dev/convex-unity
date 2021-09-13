@@ -15,14 +15,17 @@ namespace ConvexLib
     }
 
     [Serializable]
-    public class Value
+    public class TransactResponse
     {
-        public string value { get; set; }
+        public int address { get; set; }
+        public string hash { get; set; }
+        public int sequence { get; set; }
+        public int source { get; set; }
     }
 
-    public class IntValue
+    public class Result
     {
-        public int value { get; set; }
+        public dynamic value { get; set; }
+        public dynamic errorCode { get; set; }
     }
-
 }

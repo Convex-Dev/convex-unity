@@ -12,4 +12,12 @@ namespace ConvexLib
         public int address { get; set; }
         public string source { get; set; }
     }
+
+    public class TransactionRequest
+    {
+        public int address { get; set; }
+        public string accountKey { get; set; }
+        public string hash { get; set; }
+        public string sig { get; set; }
+    }
 }
