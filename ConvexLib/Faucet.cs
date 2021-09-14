@@ -9,7 +9,7 @@ namespace ConvexLib
     [Serializable]
     public class Faucet
     {
-        public int address { get; set; }
+        public Address address { get; set; }
         public int amount { get; set; }
         public int value { get; set; }
     }

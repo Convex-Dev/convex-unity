@@ -47,7 +47,7 @@ namespace _Project.Scripts
             Debug.Log(account);
 
             Credentials credentials = new Credentials();
-            credentials.address = 4022;
+            credentials.address = Address.FromString("#4022");
 
             convex.SetCredentials(credentials);
 
