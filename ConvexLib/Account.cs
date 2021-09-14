@@ -9,7 +9,7 @@ namespace ConvexLib
     [Serializable]
     public class Account
     {
-        public int Address;
+        public Address Address;
         public int Sequence;
         public AccountType Type;
         public int Balance;

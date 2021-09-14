@@ -9,6 +9,11 @@ namespace ConvexLib
     [Serializable]
     public class AccountKey
     {
-        public string value { get; set; }
+        public string accountKey { get; set; }
+
+        public AccountKey(string val)
+        {
+            accountKey = val;
+        }
     }
 }

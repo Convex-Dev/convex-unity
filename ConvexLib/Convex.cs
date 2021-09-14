@@ -90,7 +90,7 @@ namespace ConvexLib
         }
 
         // Create account
-        public async Task<Account> CreateAccount(AccountKey accountKey = null)
+        public async Task<Address> CreateAccount(AccountKey accountKey = null)
         {
             if (accountKey == null && Creds.accountKey == null)
             {
@@ -99,11 +99,11 @@ namespace ConvexLib
 
             HttpResponseMessage response =
                 await Client.PostAsJsonAsync("https://convex.world/api/v1/createAccount",
-                    accountKey.value ?? Creds.accountKey);
+                    accountKey ?? Creds.accountKey);
             response.EnsureSuccessStatusCode();
 
-            Account account = await response.Content.ReadFromJsonAsync<Account>();
-            return account;
+            Address address = await response.Content.ReadFromJsonAsync<Address>();
+            return address;
         }
 
         // Get account details

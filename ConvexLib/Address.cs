@@ -4,15 +4,16 @@ using System.Text.Json;
 
 namespace ConvexLib
 {
+    [Serializable]
     public class Address
     {
-        public int value { get; set; }
+        public int address { get; set; }
 
         public static Address FromString(string addr)
         {
             Address address = new Address
             {
-                value = int.Parse(addr.Replace("#", ""))
+                address = int.Parse(addr.Replace("#", ""))
             };
             return address;
         }
@@ -21,14 +22,14 @@ namespace ConvexLib
         {
             Address address = new Address
             {
-                value = int.Parse(jsonDocument.RootElement.GetProperty("value").ToString())
+                address = int.Parse(jsonDocument.RootElement.GetProperty("value").ToString())
             };
             return address;
         }
 
         public override string ToString()
         {
-            return String.Join("#", value);
+            return String.Join("#", address);
         }
     }
 }

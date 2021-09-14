@@ -21,7 +21,7 @@ namespace ConvexLib
         public Account ToAccount()
         {
             Account account = new Account();
-            account.Address = address;
+            account.Address = Address.FromString("#address");
             account.Balance = balance;
             account.Sequence = sequence;
             account.Type = ConvertType(type);
