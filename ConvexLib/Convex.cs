@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
@@ -11,14 +12,14 @@ namespace ConvexLib
     public class Convex
     {
         private static readonly HttpClient Client = new HttpClient();
-        private Credentials Creds;
+        public Credentials Creds;
 
         public void SetCredentials(Credentials cred)
         {
-            this.Creds = cred;
+            Creds = cred;
         }
 
-        public async Task<string> PrepareTransaction(string source, int? address = null, int? sequence = null)
+        public async Task<string> PrepareTransaction(string source, Address address = null, int? sequence = null)
         {
             if (address == null && Creds == null) throw new Exception("Missing credentials");
 
@@ -77,14 +78,14 @@ namespace ConvexLib
             return null;
         }
 
-        public async Task<Result> Transact()
+        public async Task<Result> Transact(string source)
         {
             string hash = await PrepareTransaction("(import convex.core :as core) (core/* 3 4)");
 
             //todo sign hash with credentials.secretKey
             string sign = "";
 
-            Result result = await SubmitTransaction(hash,sign);
+            Result result = await SubmitTransaction(hash, sign);
             return result;
         }
 
@@ -106,7 +107,7 @@ namespace ConvexLib
         }
 
         // Get account details
-        public async Task<AccountDetails> GetAccountDetails(int? address = null)
+        public async Task<AccountDetails> GetAccountDetails(Address address = null)
         {
             if (address == null && Creds == null)
             {
@@ -118,7 +119,7 @@ namespace ConvexLib
         }
 
         // Faucet
-        public async Task<Faucet> Faucet(int amount, int? address = null)
+        public async Task<Faucet> Faucet(int amount, Address address = null)
         {
             if (address == null && Creds == null)
             {
@@ -139,7 +140,7 @@ namespace ConvexLib
         }
 
         // Query
-        public async Task<QueryResponse> Query(string source, int? address = null)
+        public async Task<QueryResponse> Query(string source, Address address = null)
         {
             if (address == null && Creds == null)
             {
@@ -168,6 +169,59 @@ namespace ConvexLib
             }
 
             return res;
+        }
+    }
+
+    public class FungibleLibrary
+    {
+        public Convex convex { get; }
+
+        public FungibleLibrary()
+        {
+            convex = new Convex();
+        }
+
+        public async Task<Result> Transfer(Address token, Int16 holderSecretKey, Address holder = null,
+            AccountKey holderAccountKey = null, Address receiver = null, int? amount = null)
+        {
+            return await convex.Transact($"(import convex.fungible :as fungible) " +
+                                         $"(fungible/transfer {token} {receiver} {amount})");
+        }
+
+        public async Task<Result> CreateToken(int supply)
+        {
+            string source = "{" + $":supply {supply}" + "}";
+            return await convex.Transact(("(import convex.fungible :as fungible) " +
+                                          $"(deploy [(fungible/build-token {source}) " + "(fungible/add-mint {})])"));
+        }
+    }
+
+    public class NonFungibleLibrary
+    {
+        public Convex convex { get; }
+
+        public NonFungibleLibrary()
+        {
+            convex = new Convex();
+        }
+
+        public async Task<Result> CreateToken(Address caller, AccountKey callerAccountKey, UInt16 callerSecretKey,
+            Dictionary<string, string> attributes = null)
+        {
+            var attrs = attributes ?? new Dictionary<string, string>();
+
+            string name = attrs["name"] as string ?? "No name";
+            string uri = attrs["uri"] as string;
+
+            string data = "{" +
+                          $":name \"{name},\" " +
+                          $":uri \"{uri}\" " +
+                          ":extra {} " + "}";
+
+            string source = "(import convex.nft-tokens :as nft)" +
+                            $"(deploy (nft/create-token {data} nil) )";
+
+            return await convex.Transact(source);
         }
     }
 }

@@ -28,4 +28,9 @@ namespace ConvexLib
         public dynamic value { get; set; }
         public dynamic errorCode { get; set; }
     }
+
+    public class RedundantValue
+    {
+        public dynamic value { get; set; }
+    }
 }
