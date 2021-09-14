@@ -37,18 +37,13 @@ namespace _Project.Scripts
         {
             KeyPair keyPair = new KeyPair();
             string publicKey = keyPair.GenerateKeyPair().publicKey;
-            AccountKey accountKey = new AccountKey
-            {
-                value = publicKey
-            };
+            AccountKey accountKey = new AccountKey(publicKey);
 
             ConvexLib.Convex convex = new ConvexLib.Convex();
-            Account account = await convex.CreateAccount(accountKey);
-            Debug.Log(account);
+            Address address = await convex.CreateAccount(accountKey);
+            Debug.Log(address.address);
 
-            Credentials credentials = new Credentials();
-            credentials.address = Address.FromString("#4022");
-
+            Credentials credentials = new Credentials(address);
             convex.SetCredentials(credentials);
 
             //Works
