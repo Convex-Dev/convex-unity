@@ -30,37 +30,8 @@ namespace _Project.Scripts
             playerAudio = GetComponent<AudioSource>();
             playerRb = GetComponent<Rigidbody>();
 
-            StartConvex();
-        }
-
-        private async void StartConvex()
-        {
-            KeyPair keyPair = new KeyPair();
-            string publicKey = keyPair.GenerateKeyPair().publicKey;
-            AccountKey accountKey = new AccountKey(publicKey);
-
-            ConvexLib.Convex convex = new ConvexLib.Convex();
-            Address address = await convex.CreateAccount(accountKey);
-            Debug.Log(address.address);
-
-            Credentials credentials = new Credentials(address);
-            convex.SetCredentials(credentials);
-
-            //Works
-            //AccountDetails accountDetails = await game.GetAccountDetails(account.address);
-            // AccountDetails accountDetails = await convex.GetAccountDetails(4422);
-            // Debug.Log(accountDetails);
-            //
-            // //Works
-            // Faucet faucet = await convex.Faucet(251, 1000);
-            // Debug.Log(faucet);
-            //
-            //Works
-            // QueryResponse loginResponse = await convex.Query("(map inc [1 2 3])");
-            // Debug.Log(loginResponse);
-
-            // string resp = await convex.Transact();
-            // Debug.Log("Response " + resp);
+            ConvexAPI convexAPI = new ConvexAPI();
+            convexAPI.InitConvex();
         }
 
         // Update is called once per frame

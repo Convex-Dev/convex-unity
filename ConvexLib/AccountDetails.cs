@@ -21,7 +21,7 @@ namespace ConvexLib
         public Account ToAccount()
         {
             Account account = new Account();
-            account.Address = Address.FromString("#address");
+            account.Address = Address.FromString($"{address}");
             account.Balance = balance;
             account.Sequence = sequence;
             account.Type = ConvertType(type);
@@ -32,7 +32,9 @@ namespace ConvexLib
 
         public AccountType ConvertType(string accType)
         {
-            if (Enum.TryParse<AccountType>(accType, out var result))
+            string strType = char.ToUpper(accType[0]) + accType.Substring(1);
+            
+            if (Enum.TryParse<AccountType>(strType, out var result))
             {
                 switch (result)
                 {
