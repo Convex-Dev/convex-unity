@@ -9,13 +9,13 @@ namespace ConvexLib
     [Serializable]
     public class QueryRequest
     {
-        public Address address { get; set; }
+        public int address { get; set; }
         public string source { get; set; }
     }
 
     public class TransactionRequest
     {
-        public Address address { get; set; }
+        public int address { get; set; }
         public string accountKey { get; set; }
         public string hash { get; set; }
         public string sig { get; set; }

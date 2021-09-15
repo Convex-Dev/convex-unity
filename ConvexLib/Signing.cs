@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Buffers.Text;
 using System.Text;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Signers;
 using Org.BouncyCastle.Security;
 
 namespace ConvexLib
@@ -13,7 +15,7 @@ namespace ConvexLib
         public string publicKey { get; set; }
 
         //Generates a private and public Ed25519 keys
-        public KeyPair GenerateKeyPair()
+        public KeyPair()
         {
             Ed25519KeyPairGenerator keyPairGenerator = new Ed25519KeyPairGenerator();
             keyPairGenerator.Init(new Ed25519KeyGenerationParameters(new SecureRandom()));
@@ -25,7 +27,18 @@ namespace ConvexLib
             Ed25519PublicKeyParameters pairPublic = (Ed25519PublicKeyParameters) keyPair.Public;
             string pub = ByteArrayToString(pairPublic.GetEncoded());
 
-            return new KeyPair {privateKey = prv, publicKey = pub};
+            privateKey = prv;
+            publicKey = pub;
+        }
+
+        public static string Sign(byte[] msg, byte[] secretKey)
+        {
+            var signer = SignerUtilities.GetSigner("Ed25519");
+            signer.Init(true, new Ed25519PrivateKeyParameters(secretKey, 0));
+            signer.BlockUpdate(msg, 0, msg.Length);
+
+            byte[] sign = signer.GenerateSignature();
+            return ByteArrayToString(sign);
         }
 
         // The following methods come with .NET 5 but we are using 4.7
@@ -38,7 +51,7 @@ namespace ConvexLib
 
             return hex.ToString();
         }
-        
+
         public static byte[] StringToByteArray(String hex)
         {
             int numberChars = hex.Length;

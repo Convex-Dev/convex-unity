@@ -23,9 +23,11 @@ namespace ConvexLib
         {
             if (address == null && Creds == null) throw new Exception("Missing credentials");
 
-            QueryRequest query = new QueryRequest();
-            query.address = address ?? Creds.address;
-            query.source = source;
+            QueryRequest query = new QueryRequest
+            {
+                address = address?.address ?? Creds.address.address,
+                source = source
+            };
 
             HttpResponseMessage response =
                 await Client.PostAsJsonAsync<QueryRequest>("https://convex.world/api/v1/transaction/prepare", query);
@@ -47,12 +49,14 @@ namespace ConvexLib
 
             TransactionRequest query = new TransactionRequest
             {
+                accountKey = Creds.accountKey.accountKey,
+                address = Creds.address.address,
                 hash = hash,
                 sig = sig
             };
 
             HttpResponseMessage response =
-                await Client.PostAsJsonAsync<TransactionRequest>("https://convex.world/api/v1/transaction/prepare",
+                await Client.PostAsJsonAsync<TransactionRequest>("https://convex.world/api/v1/transaction/submit",
                     query);
             response.EnsureSuccessStatusCode();
             string responseBody = await response.Content.ReadAsStringAsync();
@@ -61,17 +65,10 @@ namespace ConvexLib
             {
                 JsonDocument jsonDocument = JsonDocument.Parse(responseBody);
                 string val = jsonDocument.RootElement.GetProperty("value").ToString();
-                Result result = new Result();
-
-                if (val != null)
+                Result result = new Result
                 {
-                    result.value = val;
-                }
-                else
-                {
-                    result.value = jsonDocument.RootElement.GetProperty("errorCode").ToString();
-                }
-
+                    value = val ?? jsonDocument.RootElement.GetProperty("errorCode").ToString()
+                };
                 return result;
             }
 
@@ -80,10 +77,11 @@ namespace ConvexLib
 
         public async Task<Result> Transact(string source)
         {
-            string hash = await PrepareTransaction("(import convex.core :as core) (core/* 3 4)");
+            string hash = await PrepareTransaction(source);
+            byte[] hash1 = KeyPair.StringToByteArray(hash);
 
-            //todo sign hash with credentials.secretKey
-            string sign = "";
+            byte[] pk = KeyPair.StringToByteArray(Creds.keyPair.privateKey);
+            string sign = KeyPair.Sign(hash1, pk);
 
             Result result = await SubmitTransaction(hash, sign);
             return result;
@@ -126,9 +124,11 @@ namespace ConvexLib
                 throw new Exception("Missing credentials");
             }
 
-            Faucet faucet = new Faucet();
-            faucet.address = address ?? Creds.address;
-            faucet.amount = amount;
+            Faucet faucet = new Faucet
+            {
+                address = address?.address ?? Creds.address.address,
+                amount = amount
+            };
 
             HttpResponseMessage response =
                 await Client.PostAsJsonAsync<Faucet>("https://convex.world/api/v1/faucet", faucet);
@@ -148,7 +148,7 @@ namespace ConvexLib
             }
 
             QueryRequest query = new QueryRequest();
-            query.address = address ?? Creds.address;
+            query.address = address?.address ?? Creds.address.address;
             query.source = source;
 
             HttpResponseMessage response =
@@ -176,9 +176,9 @@ namespace ConvexLib
     {
         public Convex convex { get; }
 
-        public FungibleLibrary()
+        public FungibleLibrary(Convex cvx)
         {
-            convex = new Convex();
+            convex = cvx;
         }
 
         public async Task<Result> Transfer(Address token, Int16 holderSecretKey, Address holder = null,
@@ -188,11 +188,42 @@ namespace ConvexLib
                                          $"(fungible/transfer {token} {receiver} {amount})");
         }
 
-        public async Task<Result> CreateToken(int supply)
+        public async Task<FungibleToken> CreateToken(int supply, string name = null, string description = null)
         {
-            string source = "{" + $":supply {supply}" + "}";
+            if (convex.Creds == null) throw new Exception("Missing credentials.");
+            string source = "{" + $":supply {supply} " + "}";
+            Result result = await convex.Transact(("(import convex.fungible :as fungible) " +
+                                                   $"(def my-coin (deploy [(fungible/build-token {source}) " +
+                                                   "(fungible/add-mint {})]))"));
+            Address address = Address.FromString(result.value as string);
+            FungibleTokenMetadata fungibleTokenMetadata = new FungibleTokenMetadata
+            {
+                name = name ?? "Game coins",
+                description = description ?? "These coins will be consumed on every play and can be top up."
+            };
+            FungibleToken fungibleToken = new FungibleToken(address, fungibleTokenMetadata);
+            return fungibleToken;
+        }
+
+        public async Task<Result> MintToken(int supply)
+        {
+            if (convex.Creds == null) throw new Exception("Missing credentials.");
             return await convex.Transact(("(import convex.fungible :as fungible) " +
-                                          $"(deploy [(fungible/build-token {source}) " + "(fungible/add-mint {})])"));
+                                          $"(fungible/mint my-coin {supply})"));
+        }
+
+        public async Task<Result> CheckBalance()
+        {
+            if (convex.Creds == null) throw new Exception("Missing credentials.");
+            return await convex.Transact(("(import convex.fungible :as fungible) " +
+                                          "(fungible/balance my-coin *address*)"));
+        }
+
+        public async Task<Result> BurnToken(int supply)
+        {
+            if (convex.Creds == null) throw new Exception("Missing credentials.");
+            return await convex.Transact(("(import convex.fungible :as fungible) " +
+                                          $"(fungible/burn my-coin {supply})"));
         }
     }
 
@@ -200,9 +231,9 @@ namespace ConvexLib
     {
         public Convex convex { get; }
 
-        public NonFungibleLibrary()
+        public NonFungibleLibrary(Convex cvx)
         {
-            convex = new Convex();
+            convex = cvx;
         }
 
         public async Task<Result> CreateToken(Address caller, AccountKey callerAccountKey, UInt16 callerSecretKey,
