@@ -7,6 +7,7 @@ using System.Web.Script.Serialization;
 
 namespace ConvexLib
 {
+    [Serializable]
     public class FungibleTokenMetadata
     {
         public string name { get; set; }
@@ -33,11 +34,12 @@ namespace ConvexLib
         }
     }
 
+    [Serializable]
     public class FungibleToken : Asset
     {
         // Shouldn't change after creation
-        public Address address { get; }
-        public FungibleTokenMetadata metadata { get; }
+        public Address address { get; set; }
+        public FungibleTokenMetadata metadata { get; set; }
 
         public FungibleToken(Address addr, FungibleTokenMetadata met)
         {
@@ -106,7 +108,7 @@ namespace ConvexLib
 
     public class NonFungibleToken : Asset
     {
-        public Address address { get; }
+        public Address address { get; set; }
         public NonFungibleTokenMetadata metadata { get; }
 
         public NonFungibleToken(Address addr, NonFungibleTokenMetadata tokenMetadata)
