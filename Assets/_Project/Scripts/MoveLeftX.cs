@@ -26,6 +26,10 @@ namespace _Project.Scripts
             // If object goes off screen that is NOT the background, destroy it
             if (transform.position.x < leftBound && !gameObject.CompareTag("Background"))
             {
+                if (gameObject.CompareTag("Bomb"))
+                {
+                    playerControllerScript.UpdateScore(1);
+                }
                 Destroy(gameObject);
             }
 

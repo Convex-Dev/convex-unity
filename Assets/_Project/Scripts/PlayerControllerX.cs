@@ -1,11 +1,14 @@
 ﻿using ConvexLib;
 using UnityEngine;
+using TMPro;
 
 namespace _Project.Scripts
 {
     public class PlayerControllerX : MonoBehaviour
     {
         public bool gameOver;
+        public TextMeshProUGUI scoreText;
+        private int score;
 
         public float floatForce;
         private float gravityModifier = 1.5f;
@@ -30,6 +33,9 @@ namespace _Project.Scripts
             playerAudio = GetComponent<AudioSource>();
             playerRb = GetComponent<Rigidbody>();
 
+            score = 0;
+            UpdateScore(0);
+
             ConvexAPI convexAPI = new ConvexAPI();
             convexAPI.InitConvex();
         }
@@ -49,6 +55,19 @@ namespace _Project.Scripts
             }
         }
 
+        public void UpdateScore(int scoreToAdd, bool? reset = null)
+        {
+            if (reset == true)
+            {
+                scoreText.text = "Score: " + scoreToAdd;
+            }
+            else
+            {
+                score += scoreToAdd;
+                scoreText.text = "Score: " + score;
+            }
+        }
+
         private void OnCollisionEnter(Collision other)
         {
             if (Input.GetKey(KeyCode.Space))
@@ -60,6 +79,7 @@ namespace _Project.Scripts
             // if player collides with bomb, explode and set gameOver to true
             if (other.gameObject.CompareTag("Bomb"))
             {
+                UpdateScore(0, true);
                 explosionParticle.Play();
                 playerAudio.PlayOneShot(explodeSound, 1.0f);
                 gameOver = true;
@@ -71,6 +91,7 @@ namespace _Project.Scripts
             else if (other.gameObject.CompareTag("Money"))
             {
                 fireworksParticle.Play();
+                UpdateScore(5);
                 playerAudio.PlayOneShot(moneySound, 1.0f);
                 Destroy(other.gameObject);
             }
