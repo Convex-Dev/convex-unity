@@ -9,6 +9,7 @@ using Org.BouncyCastle.Security;
 
 namespace ConvexLib
 {
+    [Serializable]
     public class KeyPair
     {
         public string privateKey { get; set; }
