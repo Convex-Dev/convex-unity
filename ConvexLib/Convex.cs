@@ -9,16 +9,19 @@ using System.Threading.Tasks;
 
 namespace ConvexLib
 {
+    // Main class for interacting with the convex test network
     public class Convex
     {
         private static readonly HttpClient Client = new HttpClient();
         public Credentials Creds;
-
+        
         public void SetCredentials(Credentials cred)
         {
             Creds = cred;
         }
 
+        // Prepare transaction
+        // Makes an API call to https://convex.world/tools/rest-api/prepare-transaction
         public async Task<string> PrepareTransaction(string source, Address address = null, int? sequence = null)
         {
             if (address == null && Creds == null) throw new Exception("Missing credentials");
@@ -43,6 +46,8 @@ namespace ConvexLib
             return null;
         }
 
+        // Submit transaction
+        // Makes an API call to https://convex.world/tools/rest-api/submit-transaction
         public async Task<Result> SubmitTransaction(string hash, string sig)
         {
             if (Creds == null) throw new Exception("Missing credentials");
@@ -75,6 +80,8 @@ namespace ConvexLib
             return null;
         }
 
+        // Transact
+        // This function prepares the transaction and then submits it.
         public async Task<Result> Transact(string source)
         {
             string hash = await PrepareTransaction(source);
@@ -88,6 +95,8 @@ namespace ConvexLib
         }
 
         // Create account
+        // This makes an API call to https://convex.world/tools/rest-api/create-an-account
+        // Returns a convex address
         public async Task<Address> CreateAccount(AccountKey accountKey = null)
         {
             if (accountKey == null && Creds.accountKey == null)
@@ -104,7 +113,9 @@ namespace ConvexLib
             return address;
         }
 
-        // Get account details
+        // Fetch account details
+        // This makes and API call to https://convex.world/tools/rest-api/account-details
+        // Returns the account details
         public async Task<AccountDetails> GetAccountDetails(Address address = null)
         {
             if (address == null && Creds == null)
@@ -116,7 +127,8 @@ namespace ConvexLib
                 String.Format("https://convex.world/api/v1/accounts/{0}", address ?? Creds.address));
         }
 
-        // Faucet
+        // Request coins
+        // This makes an API call to https://convex.world/tools/rest-api/request-coins
         public async Task<Faucet> Faucet(int amount, Address address = null)
         {
             if (address == null && Creds == null)
@@ -139,7 +151,8 @@ namespace ConvexLib
             return responseFaucet;
         }
 
-        // Query
+        // Query the test network
+        // Makes an API call to https://convex.world/tools/rest-api/query
         public async Task<QueryResponse> Query(string source, Address address = null)
         {
             if (address == null && Creds == null)
@@ -172,6 +185,7 @@ namespace ConvexLib
         }
     }
 
+    // This class is for interacting with fungible tokens
     public class FungibleLibrary
     {
         public Convex convex { get; }
@@ -181,6 +195,7 @@ namespace ConvexLib
             convex = cvx;
         }
 
+        // Transfer tokens
         public async Task<Result> Transfer(Address token, Int16 holderSecretKey, Address holder = null,
             AccountKey holderAccountKey = null, Address receiver = null, int? amount = null)
         {
@@ -188,6 +203,7 @@ namespace ConvexLib
                                          $"(fungible/transfer {token} {receiver} {amount})");
         }
 
+        // Create fungible tokens
         public async Task<FungibleToken> CreateToken(int supply, string name = null, string description = null)
         {
             if (convex.Creds == null) throw new Exception("Missing credentials.");
@@ -205,6 +221,7 @@ namespace ConvexLib
             return fungibleToken;
         }
 
+        // Consume fungible tokens
         public async Task<Result> MintToken(int supply)
         {
             if (convex.Creds == null) throw new Exception("Missing credentials.");
@@ -212,6 +229,7 @@ namespace ConvexLib
                                           $"(fungible/mint my-coin {supply})"));
         }
 
+        // Check the balance of fungible tokens
         public async Task<Result> CheckBalance()
         {
             if (convex.Creds == null) throw new Exception("Missing credentials.");
@@ -219,6 +237,7 @@ namespace ConvexLib
                                           "(fungible/balance my-coin *address*)"));
         }
 
+        // Destroy fungible tokens
         public async Task<Result> BurnToken(int supply)
         {
             if (convex.Creds == null) throw new Exception("Missing credentials.");
@@ -227,6 +246,7 @@ namespace ConvexLib
         }
     }
 
+    // This class is for interacting with non fungible tokens
     public class NonFungibleLibrary
     {
         public Convex convex { get; }
@@ -236,6 +256,7 @@ namespace ConvexLib
             convex = cvx;
         }
 
+        // Create non fungible tokens
         public async Task<Result> CreateToken(Address caller, AccountKey callerAccountKey, UInt16 callerSecretKey,
             Dictionary<string, string> attributes = null)
         {

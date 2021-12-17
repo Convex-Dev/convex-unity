@@ -171,6 +171,7 @@ namespace _Project.Scripts
             Result result = await fungibleLibrary.CheckBalance();
             if (result.value is string val && val != "")
             {
+                Debug.Log($"Val \n {val}");
                 int bal = int.Parse(val);
                 UpdateStateBalance(bal);
             }
