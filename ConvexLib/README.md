@@ -45,7 +45,7 @@ string hash = await PrepareTransaction(source);
 ```
 6. Submit transaction
 ```c#
-string hash = await PrepareTransaction(source);
+string hash = await Cvx.PrepareTransaction(source);
 byte[] hash1 = KeyPair.StringToByteArray(hash);
 
 byte[] pk = KeyPair.StringToByteArray(Creds.keyPair.privateKey);
