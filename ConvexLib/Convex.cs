@@ -196,7 +196,7 @@ namespace ConvexLib
         }
 
         // Transfer tokens
-        public async Task<Result> Transfer(Address token, Int16 holderSecretKey, Address holder = null,
+        public async Task<Result> Transfer(Address token, Address holder = null,
             AccountKey holderAccountKey = null, Address receiver = null, int? amount = null)
         {
             return await convex.Transact($"(import convex.fungible :as fungible) " +
