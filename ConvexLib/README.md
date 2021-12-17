@@ -27,6 +27,6 @@ The code can be found in the `FungibleLibrary` class and has support for
 Support for non fungible tokens is still in development with the following supported endpoints;
 1. Creation of non fungible tokens
 
-Code for handling non fungible tokens can be found at `FungibleLibrary`
+Code for handling non fungible tokens can be found at `NonFungibleLibrary`
 
 Copyright (c) 2021 [Superstruct Ltd](https://superstruct.nz/)
